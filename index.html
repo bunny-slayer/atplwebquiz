@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATPL Air Law Quiz</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">✈</span>
+      <span class="brand-text">ATPL Air Law Quiz</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div id="topbar-stats" class="topbar-stats hidden">
+      <span class="stat correct">Correct <span id="stat-correct">0</span></span>
+      <span class="stat wrong">Wrong <span id="stat-wrong">0</span></span>
+      <span class="stat progress">
+        <span id="stat-progress">0 / 0</span>
+      </span>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ HOME VIEW ============ -->
+    <section id="home-view" class="view">
+      <div class="card">
+        <h1>Practice ATPL Air Law</h1>
+        <p class="subtitle">
+          Configure a session below. Questions are pulled from
+          <code>questions.csv</code> at runtime — edit the CSV to add or fix
+          questions and refresh the page.
+        </p>
+
+        <div class="loading" id="home-loading">Loading question bank…</div>
+
+        <div class="form" id="home-form" hidden>
+          <div class="field">
+            <div class="field-header">
+              <label>Sections</label>
+              <div class="field-actions">
+                <button type="button" class="link-btn" id="select-all-sections">
+                  Select all
+                </button>
+                <span class="sep">·</span>
+                <button type="button" class="link-btn" id="clear-sections">
+                  Clear
+                </button>
+              </div>
+            </div>
+            <div class="section-list" id="section-list">
+              <!-- Section checkboxes injected by JS -->
+            </div>
+            <div class="hint" id="section-hint"></div>
+          </div>
+
+          <div class="field">
+            <label>Number of questions</label>
+            <div class="presets">
+              <button type="button" class="preset" data-count="10">10</button>
+              <button type="button" class="preset" data-count="25">25</button>
+              <button type="button" class="preset selected" data-count="50">50</button>
+              <button type="button" class="preset" data-count="100">100</button>
+              <button type="button" class="preset" data-count="all">All</button>
+            </div>
+            <div class="custom-count">
+              <label for="custom-count">or custom:</label>
+              <input
+                type="number"
+                id="custom-count"
+                min="1"
+                placeholder="e.g. 30"
+              />
+            </div>
+          </div>
+
+          <div class="field checkbox-field">
+            <label class="checkbox">
+              <input type="checkbox" id="shuffle-choices" checked />
+              <span>Shuffle the four answer choices</span>
+            </label>
+          </div>
+
+          <div class="field checkbox-field">
+            <label class="checkbox">
+              <input type="checkbox" id="hide-synth" />
+              <span>
+                Skip questions whose distractors were auto-generated
+                <span class="badge synth-badge">Synthesized</span>
+              </span>
+            </label>
+          </div>
+
+          <button id="start-btn" class="primary">Start quiz →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ QUIZ VIEW ============ -->
+    <section id="quiz-view" class="view hidden">
+      <div class="card quiz-card">
+        <div class="quiz-meta">
+          <span class="qid" id="quiz-qid"></span>
+          <span class="section-tag" id="quiz-section"></span>
+          <span class="synth-badge hidden" id="quiz-synth-tag">Synthesized choices</span>
+        </div>
+
+        <h2 class="question-text" id="question-text"></h2>
+
+        <form id="choices-form" class="choices">
+          <!-- Choice rows injected by JS -->
+        </form>
+
+        <div class="feedback hidden" id="feedback">
+          <div class="feedback-headline" id="feedback-headline"></div>
+          <div class="feedback-detail" id="feedback-detail"></div>
+        </div>
+
+        <div class="quiz-actions">
+          <button id="submit-btn" class="primary" disabled>Submit answer</button>
+          <button id="next-btn" class="primary hidden">Next question →</button>
+          <button id="quit-btn" class="ghost">End session</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SUMMARY VIEW ============ -->
+    <section id="summary-view" class="view hidden">
+      <div class="card">
+        <h1>Session summary</h1>
+
+        <div class="score-row">
+          <div class="score-block correct">
+            <div class="score-num" id="summary-correct">0</div>
+            <div class="score-label">Correct</div>
+          </div>
+          <div class="score-block wrong">
+            <div class="score-num" id="summary-wrong">0</div>
+            <div class="score-label">Wrong</div>
+          </div>
+          <div class="score-block total">
+            <div class="score-num" id="summary-total">0</div>
+            <div class="score-label">Answered</div>
+          </div>
+          <div class="score-block percent">
+            <div class="score-num" id="summary-percent">—</div>
+            <div class="score-label">Score</div>
+          </div>
+        </div>
+
+        <div id="summary-section">
+          <h2>Questions you got wrong</h2>
+          <div id="wrong-list" class="wrong-list">
+            <p class="empty-msg" id="wrong-empty" hidden>
+              Nothing here — you got every question right. Excellent work.
+            </p>
+          </div>
+        </div>
+
+        <div class="summary-actions">
+          <button id="retry-wrong-btn" class="primary">
+            Practice my wrong answers
+          </button>
+          <button id="home-btn" class="ghost">Back to home</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Question bank: <code id="footer-count">…</code> questions loaded from <code>questions.csv</code></span>
+    <span class="footer-credit">
+      Built by Vorapon Kachapornkul (Kao) in the class of BAC118
+    </span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
