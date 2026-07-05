@@ -1,140 +1,56 @@
-# ATPL Air Law Quiz — `atplwebquiz`
+# ATPL Practice Quiz
 
-A self-contained quiz site that loads its 781-question bank from
-`questions.csv` at runtime. No build step is needed.
+Static quiz site — no build step. Deploy the whole folder to GitHub Pages, or run it locally with the launchers below.
 
-The folder also includes `ATPL_Air_Law_Questions.xlsx` and
-`update_questions_from_excel.py` so the question bank can be edited and
-regenerated from inside this folder before zipping or sharing it.
+## Run locally
 
-## Run it
+Browsers block loading data from `file://`, so use a local web server:
 
-Modern browsers block `fetch()` on `file://` URLs for security, so the page
-needs a tiny local web server. The launchers are sorted into platform
-folders so it's obvious where to click:
+| Platform | Action |
+| -------- | ------ |
+| **Windows** (Python installed) | Double-click `Windows/clicktostart.bat` |
+| **Windows** (no Python) | Double-click `Windows/install_python_then_start.bat` |
+| **macOS** | Double-click `macOS/clicktostart.command` |
+| **Linux / terminal** | `chmod +x macOS/clicktostart.sh && ./macOS/clicktostart.sh` |
 
-```
-atplwebquiz/
-├── Windows/        ← Windows users open this folder
-└── macOS/          ← Mac (and Linux) users open this folder
-```
+Opens at `http://localhost:8000/index.html`. Press **Ctrl+C** in the terminal to stop.
 
-- **Windows, no Python installed** — open the `Windows` folder and
-  double-click `install_python_then_start.bat`. It installs Python
-  automatically, then opens the quiz.
-- **Windows, Python already installed** — open the `Windows` folder and
-  double-click `clicktostart.bat`. Your default browser will open at
-  `http://localhost:8000/index.html`.
-- **macOS one-click** — open the `macOS` folder and double-click
-  `clicktostart.command`. It tries Python first, then Ruby, and opens the
-  quiz in your browser.
-- **Linux / Terminal** — open the `macOS` folder and run
-  `chmod +x clicktostart.sh && ./clicktostart.sh`.
+## Deploy (GitHub Pages)
 
-Each launcher steps up to the website folder before starting
-`python -m http.server 8000`, so `questions.csv`, `index.html`, and the rest
-stay where they are. Stop the server with **Ctrl+C** in the console.
+Push this folder to a GitHub repo and enable **Pages → Deploy from branch → `/ (root)`**.  
+Live example: https://bunny-slayer.github.io/atplwebquiz/
 
-If you prefer to use any other static-file server (Live Server in VS Code,
-`npx serve`, `php -S`, etc.) just point it at this `atplwebquiz` folder.
-
-## Use the site
-
-1. **Home page** — tick the sections you want to practise (one, several, or
-   all of them via *Select all* / *Clear*), set how many questions you want
-   (10 / 25 / 50 / 100 / All / custom), and start.
-2. **Quiz page** — click a choice and press **Submit answer**. The page locks
-   the choices, marks the correct one green, and your wrong pick (if any) red.
-   Click **Next question** to move on.
-3. **Summary page** — at the end you get totals (correct, wrong, percentage)
-   plus a list of every question you got wrong with both your answer and the
-   correct answer. Click **Practice my wrong answers** to immediately re-quiz
-   only the questions you missed.
-
-The top bar always shows your live score and progress (e.g. *Correct 12 |
-Wrong 3 | 16 / 50*).
-
-## How questions are stored
-
-`questions.csv` has one row per question with these columns:
-
-| Column          | Meaning                                              |
-| --------------- | ---------------------------------------------------- |
-| Section         | Topic (e.g. *Rules of the Air – Part 2*)             |
-| QuestionID      | Source ID, e.g. `010.07 Part 1 Q0017`                |
-| Question        | Question stem                                        |
-| ChoiceA…ChoiceD | The four answer options                             |
-| CorrectAnswer   | Must equal one of ChoiceA–ChoiceD                    |
-| Source          | `PDF` (choices from the original document) or `Synthesized` (auto-generated distractors — review before relying) |
-
-The site filters out any row where the `CorrectAnswer` doesn't match one of
-the four choices, so the data stays consistent.
-
-### Updating the bank
-
-The website reads `questions.csv`; it does not read the Excel file directly.
-You can edit `questions.csv` directly (Excel, VS Code, anything), save, and
-refresh the browser.
-
-For a friendlier editing workflow, edit `ATPL_Air_Law_Questions.xlsx` in this
-folder, then regenerate `questions.csv` from it:
-
-```bash
-python update_questions_from_excel.py
-```
-
-That updater needs Python with `openpyxl` installed:
-
-```bash
-python -m pip install openpyxl
-```
-
-You do **not** need `parse_all.py`, `generate_excel.py`, or
-`parsed_questions.json` in the zipped website folder. Those are source/build
-files for recreating the workbook from the original PDF; the website itself
-only needs the files listed below.
-
-## Sharing As A Zip
-
-Zip the whole `atplwebquiz` folder and send it. The recipient should unzip
-it somewhere normal (Desktop or Documents), then:
-
-1. **Windows users** — open the `Windows` subfolder and read
-   `READ_ME_FIRST.txt`. They double-click either
-   `install_python_then_start.bat` (if they do not have Python) or
-   `clicktostart.bat` (if they already do).
-2. **macOS users** — open the `macOS` subfolder and read
-   `READ_ME_FIRST.txt`. They double-click `clicktostart.command`.
-3. Do not move `questions.csv`, `index.html`, or any other top-level file
-   out of the `atplwebquiz` folder. The launchers expect to find them by
-   stepping up one folder.
-
-If macOS says `clicktostart.command` cannot be opened after unzipping, open
-Terminal in the `macOS` folder and run this once:
-
-```bash
-chmod +x clicktostart.command
-```
-
-Then double-click `clicktostart.command` again.
-
-## Files
+## Folder layout
 
 ```
 atplwebquiz/
-├── index.html                    - All three views (home, quiz, summary)
-├── styles.css                    - Theme + layout
-├── script.js                     - CSV loader, quiz state machine, summary
-├── questions.csv                 - The question bank (781 rows)
-├── ATPL_Air_Law_Questions.xlsx   - Editable workbook copy
-├── update_questions_from_excel.py - Regenerates questions.csv from the workbook
-├── README.md                     - This file
-├── Windows/
-│   ├── READ_ME_FIRST.txt
-│   ├── clicktostart.bat              - Launches the quiz when Python is installed
-│   └── install_python_then_start.bat - Installs Python first, then launches
-└── macOS/
-    ├── READ_ME_FIRST.txt
-    ├── clicktostart.command          - macOS double-click launcher
-    └── clicktostart.sh               - macOS / Linux terminal launcher
+├── index.html          Site shell
+├── script.js           Quiz logic
+├── styles.css          Theme
+├── data/
+│   ├── manifest.json   Subject catalog
+│   └── 010-air-law.csv Question bank (781 rows)
+├── Windows/            Local launchers (Windows)
+└── macOS/              Local launchers (macOS / Linux)
 ```
+
+## Updating questions
+
+Question banks live in `data/*.csv`. To regenerate Air Law from the source PDF, run these from the repo root (`atplnotes/`):
+
+```bash
+python parse_all.py
+python generate_excel.py
+```
+
+That updates `airlaw/ATPL_Air_Law_Questions.xlsx` and `atplwebquiz/data/010-air-law.csv`.
+
+To add or refresh a subject from Evionica Excel banks:
+
+```bash
+python import_evionica.py Human.xlsx
+python import_evionica.py Airframe.xlsx
+python import_evionica.py Instrument.xlsx
+```
+
+That writes `atplwebquiz/data/<subject>.csv` and updates `data/manifest.json`.

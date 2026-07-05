@@ -1,11 +1,9 @@
 @echo off
 REM Installs Python for users who do not already have it, then starts the quiz.
-REM This script keeps questions.csv as an external file and does not modify the quiz data.
-
 REM This script lives in atplwebquiz\Windows. Step up to the website folder.
 cd /d "%~dp0.."
 
-echo ATPL Air Law Quiz setup
+echo ATPL Practice Quiz setup
 echo =======================
 echo.
 

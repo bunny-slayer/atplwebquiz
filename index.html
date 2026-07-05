@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ATPL Air Law Quiz</title>
+  <meta
+    name="description"
+    content="ATPL practice quiz — choose a syllabus subject, pick sections, and test yourself with instant feedback and session summaries."
+  />
+  <title>ATPL Practice Quiz</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark">✈</span>
-      <span class="brand-text">ATPL Air Law Quiz</span>
+      <span class="brand-text">ATPL Practice Quiz</span>
     </div>
     <div class="topbar-spacer"></div>
     <div id="topbar-stats" class="topbar-stats hidden">
@@ -23,19 +27,36 @@
   </header>
 
   <main>
-    <!-- ============ HOME VIEW ============ -->
-    <section id="home-view" class="view">
+    <!-- ============ SUBJECT PICKER (landing) ============ -->
+    <section id="subjects-view" class="view">
       <div class="card">
-        <h1>Practice ATPL Air Law</h1>
+        <h1>Choose a subject</h1>
         <p class="subtitle">
-          Configure a session below. Questions are pulled from
-          <code>questions.csv</code> at runtime — edit the CSV to add or fix
-          questions and refresh the page.
+          Select an ATPL syllabus subject to practise. You will pick sections
+          and session options on the next screen.
         </p>
 
-        <div class="loading" id="home-loading">Loading question bank…</div>
+        <div class="loading" id="subjects-loading">Loading subjects…</div>
+        <div class="subject-grid" id="subject-grid" hidden></div>
+      </div>
+    </section>
 
-        <div class="form" id="home-form" hidden>
+    <!-- ============ SESSION SETUP (per subject) ============ -->
+    <section id="setup-view" class="view hidden">
+      <div class="card">
+        <button type="button" class="back-link" id="back-to-subjects">
+          ← All subjects
+        </button>
+
+        <h1 id="setup-title">Configure your session</h1>
+        <p class="subtitle" id="setup-subtitle">
+          Pick the sections you want, set how many questions to attempt, then
+          start the quiz.
+        </p>
+
+        <div class="loading" id="setup-loading">Loading question bank…</div>
+
+        <div class="form" id="setup-form" hidden>
           <div class="field">
             <div class="field-header">
               <label>Sections</label>
@@ -162,14 +183,14 @@
           <button id="retry-wrong-btn" class="primary">
             Practice my wrong answers
           </button>
-          <button id="home-btn" class="ghost">Back to home</button>
+          <button id="home-btn" class="ghost">Back to subjects</button>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <span>Question bank: <code id="footer-count">…</code> questions loaded from <code>questions.csv</code></span>
+    <span id="footer-bank-info">Select a subject to load questions.</span>
     <span class="footer-credit">
       Built by Vorapon Kachapornkul (Kao) in the class of BAC118
     </span>

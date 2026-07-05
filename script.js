@@ -72,13 +72,30 @@ function normalizeText(s) {
 
 const $ = (id) => document.getElementById(id);
 
+const PAGE_TITLE = "ATPL Practice Quiz";
+
+// Fallback if manifest.json cannot be loaded.
+const SUBJECT_CATALOG_FALLBACK = [
+  {
+    id: "010-air-law",
+    name: "Air Law",
+    syllabus: "010",
+    description:
+      "International agreements, licensing, rules of the air, aerodromes, and related ICAO/EASA topics.",
+    file: "data/010-air-law.csv",
+    available: true,
+  },
+];
+
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
 const state = {
-  bank: [], // all questions loaded from CSV
+  subjects: [],
+  selectedSubject: null,
+  bank: [], // questions for the currently selected subject
   bySection: new Map(),
-  session: null, // active session
+  session: null,
 };
 
 function buildSession(questions, opts) {
@@ -93,22 +110,81 @@ function buildSession(questions, opts) {
 }
 
 // ---------------------------------------------------------------------------
-// Boot
+// Boot — subject catalog
 // ---------------------------------------------------------------------------
-async function loadQuestions() {
+async function loadManifest() {
+  try {
+    const resp = await fetch("data/manifest.json", { cache: "no-store" });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    state.subjects = Array.isArray(data.subjects) ? data.subjects : [];
+  } catch {
+    state.subjects = SUBJECT_CATALOG_FALLBACK.slice();
+  }
+}
+
+function renderSubjectList() {
+  const grid = $("subject-grid");
+  grid.innerHTML = "";
+
+  for (const subject of state.subjects) {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "subject-card";
+    if (!subject.available) card.classList.add("disabled");
+
+    card.innerHTML = `
+      <span class="subject-code">${escapeHtml(subject.syllabus || "—")}</span>
+      <span class="subject-name"></span>
+      <span class="subject-desc"></span>
+      <span class="subject-action">${subject.available ? "Select →" : "Coming soon"}</span>
+    `;
+    card.querySelector(".subject-name").textContent = subject.name;
+    card.querySelector(".subject-desc").textContent = subject.description || "";
+
+    if (subject.available) {
+      card.addEventListener("click", () => selectSubject(subject));
+    } else {
+      card.disabled = true;
+    }
+
+    grid.appendChild(card);
+  }
+
+  $("subjects-loading").classList.add("hidden");
+  grid.hidden = false;
+}
+
+function selectSubject(subject) {
+  state.selectedSubject = subject;
+  document.title = `${subject.name} — ${PAGE_TITLE}`;
+  $("setup-title").textContent = subject.name;
+  $("setup-subtitle").textContent =
+    "Pick the sections you want, set how many questions to attempt, then start the quiz.";
+  showView("setup-view");
+  loadQuestionsForSubject(subject);
+}
+
+async function loadQuestionsForSubject(subject) {
+  $("setup-loading").classList.remove("hidden");
+  $("setup-form").hidden = true;
+  $("setup-loading").textContent = "Loading question bank…";
+  $("setup-loading").style.color = "";
+
   let resp;
   try {
-    resp = await fetch("questions.csv", { cache: "no-store" });
-  } catch (err) {
-    showLoadError(
-      "Could not load questions.csv. If you opened this file directly with a double-click, your browser blocks file access for security. Please run start.bat / start.sh, or open this folder via a small web server (see README.md)."
+    resp = await fetch(subject.file, { cache: "no-store" });
+  } catch {
+    showSetupLoadError(
+      "Could not load the question bank. If you opened this file directly with a double-click, your browser blocks file access for security. Please run the launcher in Windows/ or macOS/, or serve this folder via a small web server (see README.md)."
     );
     return;
   }
   if (!resp.ok) {
-    showLoadError(`Could not load questions.csv (HTTP ${resp.status}).`);
+    showSetupLoadError(`Could not load ${subject.file} (HTTP ${resp.status}).`);
     return;
   }
+
   const text = await resp.text();
   const rows = parseCsv(text);
   state.bank = rows
@@ -124,12 +200,10 @@ async function loadQuestions() {
     }))
     .filter((q) => q.question && q.answer && q.choices.length >= 2);
 
-  // Discard any question whose answer doesn't match one of its choices.
   state.bank = state.bank.filter((q) =>
     q.choices.some((c) => normalizeText(c) === normalizeText(q.answer))
   );
 
-  // Group by section
   state.bySection = new Map();
   for (const q of state.bank) {
     if (!state.bySection.has(q.section)) state.bySection.set(q.section, []);
@@ -137,14 +211,29 @@ async function loadQuestions() {
   }
 
   populateSectionList();
-  $("home-loading").classList.add("hidden");
-  $("home-form").hidden = false;
-  $("footer-count").textContent = state.bank.length.toLocaleString();
+  $("setup-loading").classList.add("hidden");
+  $("setup-form").hidden = false;
+  updateFooterBankInfo();
   updateSectionHint();
 }
 
+function showSetupLoadError(msg) {
+  const loading = $("setup-loading");
+  loading.textContent = msg;
+  loading.style.color = "var(--bad)";
+}
+
+function updateFooterBankInfo() {
+  const el = $("footer-bank-info");
+  if (!state.selectedSubject || state.bank.length === 0) {
+    el.textContent = "Select a subject to load questions.";
+    return;
+  }
+  el.innerHTML = `<strong>${escapeHtml(state.selectedSubject.name)}</strong>: ${state.bank.length.toLocaleString()} questions loaded from <code>${escapeHtml(state.selectedSubject.file)}</code>`;
+}
+
 function showLoadError(msg) {
-  const loading = $("home-loading");
+  const loading = $("subjects-loading");
   loading.textContent = msg;
   loading.style.color = "var(--bad)";
 }
@@ -302,11 +391,14 @@ function startQuiz(retryOnly = null) {
 // Quiz rendering
 // ---------------------------------------------------------------------------
 function showView(id) {
-  ["home-view", "quiz-view", "summary-view"].forEach((v) => {
+  ["subjects-view", "setup-view", "quiz-view", "summary-view"].forEach((v) => {
     $(v).classList.toggle("hidden", v !== id);
   });
   if (id !== "quiz-view") {
-    if (id === "home-view") $("topbar-stats").classList.add("hidden");
+    $("topbar-stats").classList.add("hidden");
+  }
+  if (id === "subjects-view") {
+    document.title = PAGE_TITLE;
   }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -505,10 +597,14 @@ function escapeHtml(s) {
 // ---------------------------------------------------------------------------
 // Wiring
 // ---------------------------------------------------------------------------
-function wireHome() {
+function wireSetup() {
   $("hide-synth").addEventListener("change", updateSectionHint);
   $("select-all-sections").addEventListener("click", () => setAllSections(true));
   $("clear-sections").addEventListener("click", () => setAllSections(false));
+  $("back-to-subjects").addEventListener("click", () => {
+    state.session = null;
+    showView("subjects-view");
+  });
 
   document.querySelectorAll(".preset").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -556,13 +652,23 @@ function wireSummary() {
   });
   $("home-btn").addEventListener("click", () => {
     state.session = null;
-    showView("home-view");
+    showView("subjects-view");
   });
 }
 
+async function boot() {
+  await loadManifest();
+  if (state.subjects.length === 0) {
+    showLoadError("No subjects found in the catalog.");
+    return;
+  }
+  renderSubjectList();
+  showView("subjects-view");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  wireHome();
+  wireSetup();
   wireQuiz();
   wireSummary();
-  loadQuestions();
+  boot();
 });

@@ -131,6 +131,99 @@ h2 {
   line-height: 1.5;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--accent-2);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.back-link:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+/* ----- Subject picker ----- */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.subject-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 20px;
+  text-align: left;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.subject-card:hover:not(.disabled):not(:disabled) {
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px rgba(229, 128, 30, 0.12);
+  transform: translateY(-1px);
+}
+
+.subject-card.disabled,
+.subject-card:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.subject-code {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.subject-name {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.subject-desc {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-dim);
+  flex: 1;
+}
+
+.subject-action {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.subject-card.disabled .subject-action,
+.subject-card:disabled .subject-action {
+  color: var(--text-dim);
+}
+
 code {
   font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas,
     monospace;

@@ -8,7 +8,7 @@ cd /d "%~dp0.."
 set PORT=8000
 set "PY_CMD="
 
-echo Starting ATPL Air Law Quiz on http://localhost:%PORT% ...
+echo Starting ATPL Practice Quiz on http://localhost:%PORT% ...
 echo Press Ctrl+C to stop the server when you're done.
 echo.
 

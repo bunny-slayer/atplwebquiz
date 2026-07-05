@@ -1,0 +1,36 @@
+{
+  "subjects": [
+    {
+      "id": "010-air-law",
+      "name": "Air Law",
+      "syllabus": "010",
+      "description": "International agreements, licensing, rules of the air, aerodromes, and related ICAO/EASA topics.",
+      "file": "data/010-air-law.csv",
+      "available": true
+    },
+    {
+      "id": "021-airframe",
+      "name": "Airframe",
+      "syllabus": "021",
+      "description": "Aircraft structures, materials, loads, and airframe systems (AGK).",
+      "file": "data/021-airframe.csv",
+      "available": true
+    },
+    {
+      "id": "022-instrument",
+      "name": "Instrumentation",
+      "syllabus": "022",
+      "description": "Flight instruments, avionics sensors, and aircraft instrumentation systems.",
+      "file": "data/022-instrument.csv",
+      "available": true
+    },
+    {
+      "id": "040-human-factors",
+      "name": "Human Factors",
+      "syllabus": "040",
+      "description": "Human performance, physiology, psychology, and CRM for flight crew.",
+      "file": "data/040-human-factors.csv",
+      "available": true
+    }
+  ]
+}

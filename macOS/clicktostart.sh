@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.." || exit 1
 PORT=8000
 URL="http://localhost:${PORT}/index.html"
 
-echo "Starting ATPL Air Law Quiz on ${URL} ..."
+echo "Starting ATPL Practice Quiz on ${URL} ..."
 echo "Press Ctrl+C to stop the server when you're done."
 echo
 
