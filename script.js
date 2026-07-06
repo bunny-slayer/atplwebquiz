@@ -70,18 +70,8 @@ function normalizeText(s) {
   return (s || "").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
-function questionNumberFromQid(qid) {
-  const m = String(qid || "").match(/Q(\d+)\s*$/i);
-  return m ? parseInt(m[1], 10) : 0;
-}
-
 function compareQuestionsInBankOrder(a, b) {
-  const ai = state.sectionOrder.indexOf(a.section);
-  const bi = state.sectionOrder.indexOf(b.section);
-  if (ai !== bi) {
-    return (ai === -1 ? 9999 : ai) - (bi === -1 ? 9999 : bi);
-  }
-  return questionNumberFromQid(a.qid) - questionNumberFromQid(b.qid);
+  return (a.bankIndex ?? 0) - (b.bankIndex ?? 0);
 }
 
 const $ = (id) => document.getElementById(id);
@@ -214,6 +204,10 @@ async function loadQuestionsForSubject(subject) {
       source: r["Source"] || "",
     }))
     .filter((q) => q.question && q.answer && q.choices.length >= 2);
+
+  state.bank.forEach((q, i) => {
+    q.bankIndex = i;
+  });
 
   state.bank = state.bank.filter((q) =>
     q.choices.some((c) => normalizeText(c) === normalizeText(q.answer))
