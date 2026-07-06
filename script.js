@@ -70,6 +70,20 @@ function normalizeText(s) {
   return (s || "").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+function questionNumberFromQid(qid) {
+  const m = String(qid || "").match(/Q(\d+)\s*$/i);
+  return m ? parseInt(m[1], 10) : 0;
+}
+
+function compareQuestionsInBankOrder(a, b) {
+  const ai = state.sectionOrder.indexOf(a.section);
+  const bi = state.sectionOrder.indexOf(b.section);
+  if (ai !== bi) {
+    return (ai === -1 ? 9999 : ai) - (bi === -1 ? 9999 : bi);
+  }
+  return questionNumberFromQid(a.qid) - questionNumberFromQid(b.qid);
+}
+
 const $ = (id) => document.getElementById(id);
 
 const PAGE_TITLE = "ATPL Practice Quiz";
@@ -95,6 +109,7 @@ const state = {
   selectedSubject: null,
   bank: [], // questions for the currently selected subject
   bySection: new Map(),
+  sectionOrder: [], // section names in bank order (Part 1, Part 2, …)
   session: null,
 };
 
@@ -205,8 +220,12 @@ async function loadQuestionsForSubject(subject) {
   );
 
   state.bySection = new Map();
+  state.sectionOrder = [];
   for (const q of state.bank) {
-    if (!state.bySection.has(q.section)) state.bySection.set(q.section, []);
+    if (!state.bySection.has(q.section)) {
+      state.bySection.set(q.section, []);
+      state.sectionOrder.push(q.section);
+    }
     state.bySection.get(q.section).push(q);
   }
 
@@ -241,7 +260,9 @@ function showLoadError(msg) {
 function populateSectionList() {
   const list = $("section-list");
   list.innerHTML = "";
-  const sections = Array.from(state.bySection.keys()).sort();
+  const sections = state.sectionOrder.length
+    ? state.sectionOrder.slice()
+    : Array.from(state.bySection.keys()).sort();
   for (const s of sections) {
     const count = state.bySection.get(s).length;
     const label = document.createElement("label");
@@ -391,9 +412,8 @@ function startQuiz(retryOnly = null) {
 // Study mode
 // ---------------------------------------------------------------------------
 function buildStudyPool() {
-  // Study mode ignores "number of questions" and shows ALL eligible questions.
   const pool = getEligibleQuestions();
-  shuffleInPlace(pool); // keeps it fresh; user can still filter via sections
+  pool.sort(compareQuestionsInBankOrder);
   return pool;
 }
 
