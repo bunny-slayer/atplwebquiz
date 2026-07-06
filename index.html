@@ -113,7 +113,36 @@
             </label>
           </div>
 
-          <button id="start-btn" class="primary">Start quiz →</button>
+          <div class="mode-actions">
+            <button id="start-btn" class="primary">Start quiz →</button>
+            <button id="study-btn" class="ghost">Study mode →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STUDY VIEW ============ -->
+    <section id="study-view" class="view hidden">
+      <div class="card">
+        <div class="study-head">
+          <button type="button" class="back-link" id="back-to-setup">
+            ← Back to setup
+          </button>
+          <div class="study-title">
+            <h1>Study mode</h1>
+            <p class="subtitle" id="study-subtitle">
+              Answers are hidden by default. Use the buttons to reveal them.
+            </p>
+          </div>
+        </div>
+
+        <div class="study-actions">
+          <button id="study-show-all" class="primary">Show all answers</button>
+          <button id="study-hide-all" class="ghost">Hide all answers</button>
+        </div>
+
+        <div class="study-grid" id="study-grid">
+          <!-- Study items injected by JS -->
         </div>
       </div>
     </section>

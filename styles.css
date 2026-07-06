@@ -151,6 +151,20 @@ h2 {
   text-decoration: underline;
 }
 
+/* ----- Setup mode actions ----- */
+.mode-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.mode-actions .primary,
+.mode-actions .ghost {
+  flex: 1;
+  min-width: 220px;
+}
+
 /* ----- Subject picker ----- */
 .subject-grid {
   display: grid;
@@ -222,6 +236,109 @@ h2 {
 .subject-card.disabled .subject-action,
 .subject-card:disabled .subject-action {
   color: var(--text-dim);
+}
+
+/* ----- Study mode ----- */
+.study-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.study-title h1 {
+  margin-bottom: 6px;
+}
+
+.study-actions {
+  display: flex;
+  gap: 12px;
+  margin: 14px 0 18px;
+  flex-wrap: wrap;
+}
+
+.study-actions .primary,
+.study-actions .ghost {
+  min-width: 220px;
+}
+
+.study-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.study-item {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-2);
+}
+
+.study-answer,
+.study-question {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.study-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.study-meta .qid {
+  font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas,
+    monospace;
+  color: var(--text-dim);
+}
+
+.study-meta .section-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.study-question .q-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.study-answer .a-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--good);
+  background: var(--good-soft);
+  border: 1px solid rgba(22, 132, 90, 0.25);
+  padding: 10px 12px;
+  border-radius: 10px;
+  display: none;
+  word-break: break-word;
+}
+
+.study-item.revealed .study-answer .a-text {
+  display: block;
+}
+
+.study-answer .show-answer-btn {
+  align-self: flex-start;
+}
+
+.study-item.revealed .study-answer .show-answer-btn {
+  display: none;
 }
 
 code {
@@ -382,6 +499,10 @@ code {
   .section-list {
     grid-template-columns: 1fr;
     max-height: 240px;
+  }
+
+  .study-item {
+    grid-template-columns: 1fr;
   }
 }
 

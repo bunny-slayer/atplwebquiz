@@ -388,10 +388,89 @@ function startQuiz(retryOnly = null) {
 }
 
 // ---------------------------------------------------------------------------
+// Study mode
+// ---------------------------------------------------------------------------
+function buildStudyPool() {
+  // Study mode ignores "number of questions" and shows ALL eligible questions.
+  const pool = getEligibleQuestions();
+  shuffleInPlace(pool); // keeps it fresh; user can still filter via sections
+  return pool;
+}
+
+function renderStudyMode() {
+  const pool = buildStudyPool();
+  if (pool.length === 0) {
+    alert("No questions match this configuration. Try another section.");
+    return;
+  }
+
+  const grid = $("study-grid");
+  grid.innerHTML = "";
+
+  const subjectName = state.selectedSubject?.name || "Study mode";
+  const selectedSections = getSelectedSections();
+  const sectionLabel =
+    selectedSections.length === state.bySection.size
+      ? "All sections"
+      : selectedSections.length === 1
+        ? selectedSections[0]
+        : `${selectedSections.length} sections`;
+
+  $("study-subtitle").textContent = `${subjectName} • ${pool.length.toLocaleString()} questions • ${sectionLabel}`;
+
+  for (const q of pool) {
+    const item = document.createElement("div");
+    item.className = "study-item";
+
+    const answerCol = document.createElement("div");
+    answerCol.className = "study-answer";
+    answerCol.innerHTML = `
+      <div class="study-meta">
+        <span class="qid">${escapeHtml(q.qid)}</span>
+      </div>
+      <button type="button" class="primary show-answer-btn">Show answer</button>
+      <div class="a-text"></div>
+    `;
+    answerCol.querySelector(".a-text").textContent = q.answer;
+    answerCol.querySelector(".show-answer-btn").addEventListener("click", () => {
+      item.classList.add("revealed");
+    });
+
+    const questionCol = document.createElement("div");
+    questionCol.className = "study-question";
+    questionCol.innerHTML = `
+      <div class="study-meta">
+        <span class="section-tag"></span>
+        ${
+          q.source === "Synthesized"
+            ? `<span class="synth-badge">Synthesized choices</span>`
+            : ""
+        }
+      </div>
+      <div class="q-text"></div>
+    `;
+    questionCol.querySelector(".section-tag").textContent = q.section;
+    questionCol.querySelector(".q-text").textContent = q.question;
+
+    item.appendChild(questionCol);
+    item.appendChild(answerCol);
+    grid.appendChild(item);
+  }
+
+  showView("study-view");
+}
+
+function setAllStudyAnswersVisible(visible) {
+  document.querySelectorAll(".study-item").forEach((el) => {
+    el.classList.toggle("revealed", visible);
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Quiz rendering
 // ---------------------------------------------------------------------------
 function showView(id) {
-  ["subjects-view", "setup-view", "quiz-view", "summary-view"].forEach((v) => {
+  ["subjects-view", "setup-view", "study-view", "quiz-view", "summary-view"].forEach((v) => {
     $(v).classList.toggle("hidden", v !== id);
   });
   if (id !== "quiz-view") {
@@ -625,6 +704,7 @@ function wireSetup() {
   });
 
   $("start-btn").addEventListener("click", () => startQuiz(null));
+  $("study-btn").addEventListener("click", () => renderStudyMode());
 }
 
 function wireQuiz() {
@@ -656,6 +736,12 @@ function wireSummary() {
   });
 }
 
+function wireStudy() {
+  $("back-to-setup").addEventListener("click", () => showView("setup-view"));
+  $("study-show-all").addEventListener("click", () => setAllStudyAnswersVisible(true));
+  $("study-hide-all").addEventListener("click", () => setAllStudyAnswersVisible(false));
+}
+
 async function boot() {
   await loadManifest();
   if (state.subjects.length === 0) {
@@ -668,6 +754,7 @@ async function boot() {
 
 document.addEventListener("DOMContentLoaded", () => {
   wireSetup();
+  wireStudy();
   wireQuiz();
   wireSummary();
   boot();
