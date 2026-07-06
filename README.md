@@ -17,8 +17,12 @@ Opens at `http://localhost:8000/index.html`. Press **Ctrl+C** in the terminal to
 
 ## Deploy (GitHub Pages)
 
-Push this folder to a GitHub repo and enable **Pages → Deploy from branch → `/ (root)`**.  
-Live example: https://bunny-slayer.github.io/atplwebquiz/
+1. In the repo on GitHub: **Settings → Pages → Build and deployment → Source** → **GitHub Actions**.
+2. Push to `main` (or run **Actions → Deploy to GitHub Pages → Run workflow**).
+
+The workflow is `.github/workflows/pages.yml`. It uploads this folder as a static site (no build step).
+
+Live site: https://bunny-slayer.github.io/atplwebquiz/
 
 ## Folder layout
 
