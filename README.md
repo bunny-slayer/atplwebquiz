@@ -43,8 +43,8 @@ atplwebquiz/
 Question banks live in `data/*.csv`. To regenerate Air Law from the source PDF, run these from the repo root (`atplnotes/`):
 
 ```bash
-python parse_all.py
-python generate_excel.py
+python scripts/parse_all.py
+python scripts/generate_excel.py
 ```
 
 That updates `airlaw/ATPL_Air_Law_Questions.xlsx` and `atplwebquiz/data/010-air-law.csv`.
@@ -52,9 +52,9 @@ That updates `airlaw/ATPL_Air_Law_Questions.xlsx` and `atplwebquiz/data/010-air-
 To add or refresh a subject from Evionica Excel banks:
 
 ```bash
-python import_evionica.py Human.xlsx
-python import_evionica.py Airframe.xlsx
-python import_evionica.py Instrument.xlsx
+python scripts/import_evionica.py Human.xlsx
+python scripts/import_evionica.py Airframe.xlsx
+python scripts/import_evionica.py Instrument.xlsx
 ```
 
 That writes `atplwebquiz/data/<subject>.csv` and updates `data/manifest.json`.
