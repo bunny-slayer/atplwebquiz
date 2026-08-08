@@ -31,6 +31,14 @@
       "description": "Human performance, physiology, psychology, and CRM for flight crew.",
       "file": "data/040-human-factors.csv",
       "available": true
+    },
+    {
+      "id": "050-meteorology",
+      "name": "Meteorology",
+      "syllabus": "050",
+      "description": "Atmosphere, pressure systems, fronts, clouds, icing, METAR/TAF, and flight weather hazards.",
+      "file": "data/050-meteorology.csv",
+      "available": true
     }
   ]
 }
